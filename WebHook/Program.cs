@@ -1,6 +1,5 @@
 using WebHook.infrastructure;
 using WebHook.Interfaces;
-using WebHook.Models;
 using WebHook.Service;
 
 public class Program
@@ -10,10 +9,6 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddControllersWithViews();
-
-        builder.Services.Configure<AppSettings>(
-            builder.Configuration.GetSection("AppSettings")
-        );
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

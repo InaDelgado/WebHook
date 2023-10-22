@@ -14,15 +14,15 @@ namespace WebHook.Service
             _gitHubClientConfig = gitHubClientConfig;
         }
 
-        public async Task<string> SendRequest(string user, string repository)
+        public async Task<string> SendRequest(string user, string repository, string token)
         {
-            var github = _gitHubClientConfig.GetGitHubClient();
+            var github = _gitHubClientConfig.GetGitHubClient(token);
 
             var contributors = await github.Repository.GetAllContributors(user, repository);
             var issues = await github.Issue.GetAllForRepository(user, repository);
 
             var issuesResponse = GetIssuesResponse(issues);
-            var contributorsResponse = GetContributorsResponse(contributors, repository, github);
+            var contributorsResponse = GetContributorsResponse(contributors, user, repository, github);
 
             return GetResponse(user, repository, issuesResponse, contributorsResponse);
         }
@@ -63,38 +63,52 @@ namespace WebHook.Service
         }
 
         private List<ContributorResponse> GetContributorsResponse(IReadOnlyList<RepositoryContributor> contributors
+            , string user
             , string repository
             , GitHubClient github)
         {
-            List<string> loginContributor = new List<string>();
-            List<User> contributorsUser = new List<User>();
+            //List<string> loginContributor = new List<string>();
+            List<Octokit.User> contributorsUser = new List<Octokit.User>();
             IReadOnlyList<GitHubCommit> commits = new List<GitHubCommit>();
             List<ContributorResponse> contributorsResponse = new List<ContributorResponse>();
 
             var contributorsList = contributors.ToList();
-            contributorsList.ForEach(contributor =>
+            contributorsList.ForEach(async contributor =>
             {
-                loginContributor.Add(contributor.Login);
-            });
-
-            loginContributor.ForEach(async login =>
-            {
-                var user = await github.User.Get(login);
-                contributorsUser.Add(user);
-            });
-
-            contributorsUser.ForEach(async user =>
-            {
-                var commitsContributor = await github.Repository.Commit.GetAll(user.Name, repository);
+                var commitsContributor = await github.Repository.Commit.GetAll(user, repository);
                 var total = commitsContributor.Count();
+                var teste = await github.User.Get(contributor.Login);
 
                 contributorsResponse.Add(new ContributorResponse
                 {
-                    Name = user.Name,
-                    UserResponse = user,
+                    Name = user,
+                    UserResponse = teste,
                     QtdCommits = total.ToString()
                 });
+
+                await Task.Delay(1000);
             });
+
+            //loginContributor.ForEach(async login =>
+            //{
+            //    Octokit.User user = await github.User.Get(login);
+            //    contributorsUser.Add(user);
+            //});
+
+            //contributorsUser.ForEach(async user =>
+            //{
+            //    var commitsContributor = await github.Repository.Commit.GetAll(user.Name, repository);
+            //    var total = commitsContributor.Count();
+
+            //    contributorsResponse.Add(new ContributorResponse
+            //    {
+            //        Name = user.Name,
+            //        UserResponse = user,
+            //        QtdCommits = total.ToString()
+            //    });
+            //});
+
+            Task.WaitAll();
 
             return contributorsResponse;
         }

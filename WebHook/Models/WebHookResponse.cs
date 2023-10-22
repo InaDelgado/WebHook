@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Octokit;
 
 namespace WebHook.Models
 {

@@ -4,6 +4,6 @@ namespace WebHook.Interfaces
 {
     public interface IGitHubClientConfiguration
     {
-        public GitHubClient GetGitHubClient();
+        public GitHubClient GetGitHubClient(string token);
     }
 }
