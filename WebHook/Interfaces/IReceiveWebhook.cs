@@ -1,6 +1,4 @@
-﻿using WebHook.Models;
-
-namespace WebHook.Interfaces
+﻿namespace WebHook.Interfaces
 {
     public interface IReceiveWebhook
     {

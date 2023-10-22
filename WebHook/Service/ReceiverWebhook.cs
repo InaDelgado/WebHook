@@ -67,7 +67,6 @@ namespace WebHook.Service
             , string repository
             , GitHubClient github)
         {
-            //List<string> loginContributor = new List<string>();
             List<Octokit.User> contributorsUser = new List<Octokit.User>();
             IReadOnlyList<GitHubCommit> commits = new List<GitHubCommit>();
             List<ContributorResponse> contributorsResponse = new List<ContributorResponse>();
@@ -88,25 +87,6 @@ namespace WebHook.Service
 
                 await Task.Delay(1000);
             });
-
-            //loginContributor.ForEach(async login =>
-            //{
-            //    Octokit.User user = await github.User.Get(login);
-            //    contributorsUser.Add(user);
-            //});
-
-            //contributorsUser.ForEach(async user =>
-            //{
-            //    var commitsContributor = await github.Repository.Commit.GetAll(user.Name, repository);
-            //    var total = commitsContributor.Count();
-
-            //    contributorsResponse.Add(new ContributorResponse
-            //    {
-            //        Name = user.Name,
-            //        UserResponse = user,
-            //        QtdCommits = total.ToString()
-            //    });
-            //});
 
             Task.WaitAll();
 
