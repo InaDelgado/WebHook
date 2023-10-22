@@ -12,8 +12,8 @@ namespace WebHook.Controllers
     public class WebHookController : ControllerBase
     {
         private readonly IGitHubClientConfiguration _gitHubClientConfig;
-        private readonly ReceiverWebhook _receiverWebhook;
-        public WebHookController(IOptions<AppSettings> appSettingsAcessor, ReceiverWebhook receiverWebhook)
+        private readonly IReceiveWebhook _receiverWebhook;
+        public WebHookController(IOptions<AppSettings> appSettingsAcessor, IReceiveWebhook receiverWebhook)
         {
             _gitHubClientConfig = new GitHubClientConfiguration(appSettingsAcessor);
             _receiverWebhook = receiverWebhook;

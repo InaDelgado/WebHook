@@ -3,7 +3,7 @@ using Octokit;
 using WebHook.Interfaces;
 using WebHook.Models;
 
-namespace WebHook
+namespace WebHook.Service
 {
     public class ReceiverWebhook : IReceiveWebhook
     {
@@ -96,7 +96,7 @@ namespace WebHook
                 });
             });
 
-            return  contributorsResponse;
+            return contributorsResponse;
         }
     }
 }

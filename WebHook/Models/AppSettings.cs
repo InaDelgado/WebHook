@@ -2,6 +2,6 @@
 {
     public class AppSettings
     {
-        public GitHubAccessToken AccessToken { get; set; }
+        public string AccessToken { get; set; }
     }
 }

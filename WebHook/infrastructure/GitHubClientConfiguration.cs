@@ -17,9 +17,9 @@ namespace WebHook.infrastructure
         {
             var github = new GitHubClient(new ProductHeaderValue("GitHubWebhook"));
 
-            if (!string.IsNullOrEmpty(_appSettings.AccessToken.Token))
+            if (!string.IsNullOrEmpty(_appSettings.AccessToken))
             {
-                var tokenAuth = new Credentials(_appSettings.AccessToken.Token);
+                var tokenAuth = new Credentials(_appSettings.AccessToken);
                 github.Credentials = tokenAuth;
             }
 

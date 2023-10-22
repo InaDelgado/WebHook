@@ -1,22 +1,37 @@
-using WebHook;
 using WebHook.infrastructure;
 using WebHook.Interfaces;
 using WebHook.Models;
+using WebHook.Service;
 
-var builder = WebApplication.CreateBuilder(args);
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("GitHub"));
-builder.Services.AddSingleton<IGitHubClientConfiguration, GitHubClientConfiguration>();
-builder.Services.AddSingleton<IReceiveWebhook, ReceiverWebhook>();
+        builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+        builder.Services.Configure<AppSettings>(
+            builder.Configuration.GetSection("AppSettings")
+        );
 
-app.UseHttpsRedirection();
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
 
-app.UseAuthorization();
+        builder.Services.AddSingleton<IGitHubClientConfiguration, GitHubClientConfiguration>();
+        builder.Services.AddSingleton<IReceiveWebhook, ReceiverWebhook>();
 
-app.MapControllers();
+        var app = builder.Build();
 
-app.Run();
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
+}
+
+
+
