@@ -7,15 +7,16 @@ namespace WebHook
 {
     public class ReceiverWebhook : IReceiveWebhook
     {
-        public async Task<string> SendRequest(string user, string repository, GitHubAccessToken accessToken)
-        {
-            var github = new GitHubClient(new ProductHeaderValue("GitHubWebhook"));
+        private readonly IGitHubClientConfiguration _gitHubClientConfig;
 
-            if (!string.IsNullOrEmpty(accessToken.Token))
-            {
-                var tokenAuth = new Credentials(accessToken.Token);
-                github.Credentials = tokenAuth;
-            }
+        public ReceiverWebhook(IGitHubClientConfiguration gitHubClientConfig)
+        {
+            _gitHubClientConfig = gitHubClientConfig;
+        }
+
+        public async Task<string> SendRequest(string user, string repository)
+        {
+            var github = _gitHubClientConfig.GetGitHubClient();
 
             var contributors = await github.Repository.GetAllContributors(user, repository);
             var issues = await github.Issue.GetAllForRepository(user, repository);
@@ -26,7 +27,8 @@ namespace WebHook
             return GetResponse(user, repository, issuesResponse, contributorsResponse);
         }
 
-        public string GetResponse(string user, string repository
+        private string GetResponse(string user
+            , string repository
             , List<IssueResponse> issues
             , List<ContributorResponse> contributors)
         {
@@ -41,7 +43,7 @@ namespace WebHook
             return JsonConvert.SerializeObject(response);
         }
 
-        public List<IssueResponse> GetIssuesResponse(IReadOnlyList<Issue> issues)
+        private List<IssueResponse> GetIssuesResponse(IReadOnlyList<Issue> issues)
         {
             List<IssueResponse> issuesResponse = new List<IssueResponse>();
             List<ContributorResponse> contributorsResponse = new List<ContributorResponse>();
@@ -60,7 +62,7 @@ namespace WebHook
             return issuesResponse;
         }
 
-        public List<ContributorResponse> GetContributorsResponse(IReadOnlyList<RepositoryContributor> contributors
+        private List<ContributorResponse> GetContributorsResponse(IReadOnlyList<RepositoryContributor> contributors
             , string repository
             , GitHubClient github)
         {

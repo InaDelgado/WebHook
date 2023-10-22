@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Octokit;
+using WebHook.infrastructure;
+using WebHook.Interfaces;
 using WebHook.Models;
 
 namespace WebHook.Controllers
@@ -9,11 +11,11 @@ namespace WebHook.Controllers
     [Route("api/github")]
     public class WebHookController : ControllerBase
     {
-        private readonly AppSettings _appSettings;
+        private readonly IGitHubClientConfiguration _gitHubClientConfig;
         private readonly ReceiverWebhook _receiverWebhook;
         public WebHookController(IOptions<AppSettings> appSettingsAcessor, ReceiverWebhook receiverWebhook)
         {
-            _appSettings = appSettingsAcessor.Value;
+            _gitHubClientConfig = new GitHubClientConfiguration(appSettingsAcessor);
             _receiverWebhook = receiverWebhook;
         }
 
@@ -22,7 +24,7 @@ namespace WebHook.Controllers
         {
             try
             {
-                var issues = await _receiverWebhook.SendRequest(user, repository, _appSettings.AccessToken);
+                var issues = await _receiverWebhook.SendRequest(user, repository);
 
                 return Ok(issues);
             }
