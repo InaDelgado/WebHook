@@ -15,6 +15,8 @@ namespace WebHook.Controllers
         }
 
         [HttpGet("repository/issues")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetRepositoryIssues([FromHeader(Name = "Authorization")] string token
             , string user, string repository)
         {
@@ -22,15 +24,13 @@ namespace WebHook.Controllers
             {
                 var issues = await _receiverWebhook.SendRequest(user, repository, token);
 
+                if (issues == null) return NotFound("GitHub Repository Not Found.");
+
                 return Ok(issues);
-            }
-            catch (NotFoundException)
-            {
-                return NotFound("Repositório não encontrado no GitHub.");
             }
             catch (Exception ex)
             {
-                return BadRequest($"Erro ao acessar as issues: {ex.Message}");
+                return BadRequest($"Error accessing issues: {ex.Message}");
             }
         }
     }

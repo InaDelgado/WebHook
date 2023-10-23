@@ -10,6 +10,7 @@ namespace WebHook.Models
         public string Repository { get; set; }
         [JsonProperty("issues")]
         public List<IssueResponse> Issues { get; set; }
+        [JsonProperty("contributors")]
         public List<ContributorResponse> Contributors { get; set; }
     }
 }

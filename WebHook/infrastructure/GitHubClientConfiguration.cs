@@ -1,7 +1,7 @@
 ﻿using Octokit;
 using WebHook.Interfaces;
 
-namespace WebHook.infrastructure
+namespace WebHook.Infrastructure
 {
     public class GitHubClientConfiguration : IGitHubClientConfiguration
     {

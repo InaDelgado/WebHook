@@ -16,15 +16,35 @@ namespace WebHook.Service
 
         public async Task<string> SendRequest(string user, string repository, string token)
         {
-            var github = _gitHubClientConfig.GetGitHubClient(token);
+            try
+            {
+                var github = _gitHubClientConfig.GetGitHubClient(token);
 
-            var contributors = await github.Repository.GetAllContributors(user, repository);
-            var issues = await github.Issue.GetAllForRepository(user, repository);
+                if (github == null)
+                    throw new ArgumentNullException(nameof(github));
 
-            var issuesResponse = GetIssuesResponse(issues);
-            var contributorsResponse = GetContributorsResponse(contributors, user, repository, github);
+                var contributorsResponse = new List<ContributorResponse>();
 
-            return GetResponse(user, repository, issuesResponse, contributorsResponse);
+                if (github?.Repository != null)
+                {
+                    var contributors = await github.Repository.GetAllContributors(user, repository);
+                    contributorsResponse = GetContributorsResponse(contributors, user, repository, github);
+                }
+
+                var issuesResponse = new List<IssueResponse>();
+
+                if (github?.Issue != null)
+                {
+                    var issues = await github.Issue.GetAllForRepository(user, repository);
+                    issuesResponse = GetIssuesResponse(issues);
+                }
+
+                return GetResponse(user, repository, issuesResponse, contributorsResponse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
         }
 
         private string GetResponse(string user
@@ -67,7 +87,7 @@ namespace WebHook.Service
             , string repository
             , GitHubClient github)
         {
-            List<Octokit.User> contributorsUser = new List<Octokit.User>();
+            List<User> contributorsUser = new List<User>();
             IReadOnlyList<GitHubCommit> commits = new List<GitHubCommit>();
             List<ContributorResponse> contributorsResponse = new List<ContributorResponse>();
 
